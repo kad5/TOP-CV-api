@@ -1,0 +1,28 @@
+{
+  "name": "top-cv-api",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js"
+  },
+  "keywords": [],
+  "author": "kad5",
+  "license": "ISC",
+  "description": "simple backend api for my practice react app",
+  "devDependencies": {
+    "prisma": "^6.5.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.5.0",
+    "argon2": "^0.41.1",
+    "async": "^3.2.6",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-async-handler": "^1.2.0",
+    "helmet": "^8.0.0",
+    "passport-jwt": "^4.0.1"
+  }
+}
