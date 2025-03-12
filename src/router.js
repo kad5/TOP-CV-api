@@ -1,5 +1,5 @@
 const validate = require("./validation");
-const authorize = require("./config");
+const { verifyAccess } = require("./config");
 const control = require("./controller");
 const { Router } = require("express");
 const router = Router();
@@ -16,9 +16,9 @@ router.post("/auth/refresh", control.refreshToken);
 //crud
 router
   .route("/drafts")
-  .get(authorize.verifyAccess, control.getAllDrafts)
-  .post(authorize.verifyAccess, validate.signup, control.addNewDraft)
-  .put(authorize.verifyAccess, validate.signup, control.updateDrafts)
-  .delete(authorize.verifyAccess, control.deleteDraft);
+  .get(verifyAccess, control.getAllDrafts)
+  .post(verifyAccess, validate.post, control.addNewDraft)
+  .put(verifyAccess, validate.update, control.updateDraft)
+  .delete(verifyAccess, control.deleteDraft);
 
 module.exports = router;
