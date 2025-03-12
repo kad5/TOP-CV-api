@@ -1,6 +1,6 @@
 const validate = require("./validation");
-const { verifyAccess } = require("./config");
 const control = require("./controller");
+const { passport } = require("./passport-config");
 const { Router } = require("express");
 const router = Router();
 
@@ -16,9 +16,20 @@ router.post("/auth/refresh", control.refreshToken);
 //crud
 router
   .route("/drafts")
-  .get(verifyAccess, control.getAllDrafts)
-  .post(verifyAccess, validate.post, control.addNewDraft)
-  .put(verifyAccess, validate.update, control.updateDraft)
-  .delete(verifyAccess, control.deleteDraft);
+  .get(passport.authenticate("jwt", { session: false }), control.getAllDrafts)
+  .post(
+    passport.authenticate("jwt", { session: false }),
+    validate.post,
+    control.addNewDraft
+  )
+  .put(
+    passport.authenticate("jwt", { session: false }),
+    validate.update,
+    control.updateDraft
+  )
+  .delete(
+    passport.authenticate("jwt", { session: false }),
+    control.deleteDraft
+  );
 
 module.exports = router;

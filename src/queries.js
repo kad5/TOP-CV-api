@@ -1,112 +1,110 @@
-const { prisma } = require("./config");
+const { prisma } = require("./prisma-config");
 
 const createNewUser = async (username, password) => {
   try {
-    return await prisma.user.create({
-      data: { username, password },
-    });
+    return await prisma.user.create({ data: { username, password } });
   } catch (error) {
-    console.log("error from db, createNewUser");
-    console.log(error);
+    throw new Error("Database error: Unable to create user");
   }
 };
+
 const getUserById = async (userId) => {
   try {
-    return await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    return await prisma.user.findUnique({ where: { id: userId } });
   } catch (error) {
-    console.log("error from db, getUserById");
-    console.log(error);
+    throw new Error("Database error: Unable to fetch user");
   }
 };
+
 const getUserByUserName = async (username) => {
   try {
-    return await prisma.user.findUnique({
-      where: { username },
+    return await prisma.user.findUnique({ where: { username } });
+  } catch (error) {
+    throw new Error("Database error: Unable to fetch user");
+  }
+};
+
+const addRefreshToken = async (userId, token) => {
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  try {
+    return await prisma.refreshToken.create({
+      data: { userId, token, expiresAt },
     });
   } catch (error) {
-    console.log("error from db, getUserByUserName");
-    console.log(error);
-  }
-};
-const addRefreshToken = async () => {
-  try {
-  } catch (error) {
-    console.log("error from db, checkRefreshToken");
-    console.log(error);
+    throw new Error("Database error: Unable to add refresh token");
   }
 };
 
-const checkRefreshToken = async () => {
+const checkRefreshToken = async (token) => {
   try {
+    const storedToken = await prisma.refreshToken.findUnique({
+      where: { token },
+    });
+    if (!storedToken) return null;
+    if (new Date(storedToken.expiresAt) < new Date()) {
+      await deleteRefreshToken(token);
+      return null;
+    }
+    return storedToken;
   } catch (error) {
-    console.log("error from db, checkRefreshToken");
-    console.log(error);
+    throw new Error("Database error: Unable to check refresh token");
   }
 };
 
-const updateRefreshToken = async () => {
+const updateRefreshToken = async (oldToken, newToken) => {
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   try {
+    return await prisma.refreshToken.update({
+      where: { token: oldToken },
+      data: { token: newToken, expiresAt },
+    });
   } catch (error) {
-    console.log("error from db, checkRefreshToken");
-    console.log(error);
+    throw new Error("Database error: Unable to update refresh token");
   }
 };
 
-const deleteRefreshToken = async () => {
+const deleteRefreshToken = async (token) => {
   try {
+    return await prisma.refreshToken.delete({ where: { token } });
   } catch (error) {
-    console.log("error from db, checkRefreshToken");
-    console.log(error);
+    throw new Error("Database error: Unable to delete refresh token");
   }
 };
 
 const getAllDrafts = async (userId) => {
   try {
-    return await prisma.draft.findMany({
-      where: { userId },
-    });
+    return await prisma.draft.findMany({ where: { userId } });
   } catch (error) {
-    console.log("error from db, getAllDrafts");
-    console.log(error);
+    throw new Error("Database error: Unable to fetch drafts");
   }
 };
+
 const addNewDraft = async (userId, title, content) => {
   try {
-    return await prisma.draft.create({
-      data: { userId, title, content },
-    });
+    return await prisma.draft.create({ data: { userId, title, content } });
   } catch (error) {
-    console.log("error from db, addNewDraft");
-    console.log(error);
+    throw new Error("Database error: Unable to create draft");
   }
 };
+
 const updateDraft = async (userId, draftId, data) => {
   try {
-    const draft = await prisma.draft.updateMany({
+    return await prisma.draft.update({
       where: { id: draftId, userId },
       data,
     });
-    if (draft.count === 0)
-      return { error: "Oops,you are not authorized to update this" };
-    return draft;
   } catch (error) {
-    console.log("error from db, updateDraft");
-    console.log(error);
+    throw new Error("Database error: Unable to update draft");
   }
 };
+
 const deleteDraft = async (userId, draftId) => {
   try {
-    const draft = await prisma.draft.deleteMany({
+    return await prisma.draft.delete({
       where: { id: draftId, userId },
     });
-    if (draft.count === 0)
-      return { error: "Oops, you are not authorized to delete this" };
-    return draft;
   } catch (error) {
-    console.log("error from db, deleteDraft");
-    console.log(error);
+    throw new Error("Database error: Unable to delete draft");
   }
 };
 

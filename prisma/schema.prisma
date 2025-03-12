@@ -14,11 +14,12 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  username  String   @unique
-  password  String
-  drafts    Draft[]
-  createdAt DateTime @default(now())
+  id           String        @id @default(uuid())
+  username     String        @unique
+  password     String
+  drafts       Draft[]
+  createdAt    DateTime      @default(now())
+  RefreshToken RefreshToken?
 }
 
 model Draft {
@@ -29,4 +30,13 @@ model Draft {
   User      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @unique //making userId unique enforces signel device log in only. if otherwise then we can allow users to have multiple refresh tokens stored in our db and by so logging from several devices at once
+  token     String   @unique
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }

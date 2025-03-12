@@ -4,9 +4,10 @@ const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const express = require("express");
 const router = require("./src/router");
+const { passport } = require("./src/passport-config");
 
 const app = express();
-
+app.use(passport.initialize());
 app.use(helmet()); //securtiy dependency
 app.use(cookieParser());
 app.use(express.json());
