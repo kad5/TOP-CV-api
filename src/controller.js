@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
-const queries = require("./queries");
+const jwt = require("jsonwebtoken");
 const argon2 = require("argon2");
+const queries = require("./queries");
 const { generateAccessToken, generateRefreshToken } = require("./auth");
 
 const signup = asyncHandler(async (req, res) => {
@@ -72,8 +73,8 @@ const refreshToken = asyncHandler(async (req, res) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
 
-    const newAccessToken = generateAccessToken({ id: decoded.id });
-    const newRefreshToken = generateRefreshToken({ id: decoded.id });
+    const newAccessToken = generateAccessToken(decoded.id);
+    const newRefreshToken = generateRefreshToken(decoded.id);
 
     await queries.updateRefreshToken(refreshToken, newRefreshToken);
 
@@ -84,19 +85,20 @@ const refreshToken = asyncHandler(async (req, res) => {
     });
     return res.status(200).json({ accessToken: newAccessToken });
   } catch (error) {
+    console.log(error);
     return res.status(403).json({ message: "Forbidden" });
   }
 });
 
 const getAllDrafts = asyncHandler(async (req, res) => {
-  const { userId } = req.user;
+  const userId = req.user.id;
 
   const drafts = await queries.getAllDrafts(userId);
 
   return res.status(200).json({ drafts });
 });
 const addNewDraft = asyncHandler(async (req, res) => {
-  const { userId } = req.user;
+  const userId = req.user.id;
   const { title, content } = req.body;
 
   const newDraft = await queries.addNewDraft(userId, title, content);
@@ -104,14 +106,14 @@ const addNewDraft = asyncHandler(async (req, res) => {
   return res.status(200).json({ newDraft });
 });
 const updateDraft = asyncHandler(async (req, res) => {
-  const { userId } = req.user;
+  const userId = req.user.id;
   const { draftId, data } = req.body;
 
   const updatedDraft = await queries.updateDraft(userId, draftId, data);
   return res.status(200).json({ updatedDraft });
 });
 const deleteDraft = asyncHandler(async (req, res) => {
-  const { userId } = req.user;
+  const userId = req.user.id;
   const { draftId } = req.body;
 
   const deletedDraft = await queries.deleteDraft(userId, draftId);

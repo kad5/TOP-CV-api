@@ -27,8 +27,17 @@ const getUserByUserName = async (username) => {
 const addRefreshToken = async (userId, token) => {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   try {
-    return await prisma.refreshToken.create({
-      data: { userId, token, expiresAt },
+    return await prisma.refreshToken.upsert({
+      where: { userId },
+      update: {
+        token,
+        expiresAt,
+      },
+      create: {
+        userId,
+        token,
+        expiresAt,
+      },
     });
   } catch (error) {
     throw new Error("Database error: Unable to add refresh token");
@@ -65,7 +74,7 @@ const updateRefreshToken = async (oldToken, newToken) => {
 
 const deleteRefreshToken = async (token) => {
   try {
-    return await prisma.refreshToken.delete({ where: { token } });
+    return await prisma.refreshToken.deleteMany({ where: { token } });
   } catch (error) {
     throw new Error("Database error: Unable to delete refresh token");
   }
