@@ -20,11 +20,6 @@ const post = asyncHandler(async (req, res, next) => {
   next();
 });
 const update = asyncHandler(async (req, res, next) => {
-  const { title, content } = req.body;
-  if (!title || title.trim() === "")
-    return res.status(400).json({ message: "You must set a title" });
-  if (typeof content !== "object" || content === null)
-    return res.status(400).json({ message: "Invalid data, please try again" });
   next();
 });
 
