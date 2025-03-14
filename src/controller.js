@@ -6,7 +6,6 @@ const { generateAccessToken, generateRefreshToken } = require("./auth");
 
 const signup = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
-
   const isTaken = await queries.getUserByUserName(username);
   if (isTaken)
     return res.status(409).json({ message: "This username is already taken" });
@@ -32,9 +31,9 @@ const signup = asyncHandler(async (req, res) => {
 
 const login = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
-
   const user = await queries.getUserByUserName(username);
-  if (!user) return res.status(401).json({ message: "invalid username" });
+  if (!user)
+    return res.status(401).json({ message: "invalid username or password" });
 
   const isMatch = await argon2.verify(user.password, password);
   if (!isMatch)
