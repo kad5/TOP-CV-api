@@ -26,6 +26,7 @@ const getUserByUserName = async (username) => {
 
 const addRefreshToken = async (userId, token) => {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  console.log("token added");
   try {
     return await prisma.refreshToken.upsert({
       where: { userId },
@@ -40,11 +41,13 @@ const addRefreshToken = async (userId, token) => {
       },
     });
   } catch (error) {
+    console.log(error);
     throw new Error("Database error: Unable to add refresh token");
   }
 };
 
 const checkRefreshToken = async (token) => {
+  console.log("token checked");
   try {
     const storedToken = await prisma.refreshToken.findUnique({
       where: { token },
@@ -56,11 +59,13 @@ const checkRefreshToken = async (token) => {
     }
     return storedToken;
   } catch (error) {
+    console.log(error);
     throw new Error("Database error: Unable to check refresh token");
   }
 };
 
 const updateRefreshToken = async (oldToken, newToken) => {
+  console.log("token updated");
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   try {
     return await prisma.refreshToken.update({
@@ -68,14 +73,17 @@ const updateRefreshToken = async (oldToken, newToken) => {
       data: { token: newToken, expiresAt },
     });
   } catch (error) {
+    console.log(error);
     throw new Error("Database error: Unable to update refresh token");
   }
 };
 
 const deleteRefreshToken = async (token) => {
+  console.log("token deleted");
   try {
     return await prisma.refreshToken.deleteMany({ where: { token } });
   } catch (error) {
+    console.log(error);
     throw new Error("Database error: Unable to delete refresh token");
   }
 };
