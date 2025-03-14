@@ -13,8 +13,9 @@ const signup = asyncHandler(async (req, res, next) => {
 const post = asyncHandler(async (req, res, next) => {
   const { title, content } = req.body;
   if (!title || title.trim() === "")
-    return res.status(400).json({ message: "You must set a title" });
-  if (!validateJSON(content))
+    return res.status(400).json({ message: "You must set a valid title" });
+  if (typeof content !== "object" || content === null)
+    //cause null is an object, fml!
     return res.status(400).json({ message: "Invalid data, please try again" });
   next();
 });
@@ -22,18 +23,9 @@ const update = asyncHandler(async (req, res, next) => {
   const { title, content } = req.body;
   if (!title || title.trim() === "")
     return res.status(400).json({ message: "You must set a title" });
-  if (!validateJSON(content))
+  if (typeof content !== "object" || content === null)
     return res.status(400).json({ message: "Invalid data, please try again" });
   next();
 });
-
-const validateJSON = (data) => {
-  try {
-    JSON.parse(data);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
 
 module.exports = { signup, post, update };
