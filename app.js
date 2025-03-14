@@ -7,10 +7,19 @@ const router = require("./src/router");
 const { passport } = require("./src/passport-config");
 
 const app = express();
-
 app.use(passport.initialize());
+
 app.use(helmet()); //securtiy dependency
-app.use(helmet.noCache()); // prevents caching by chrome which can cause stale logins from cahced data
+app.use((req, res, next) => {
+  res.set({
+    "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+    Pragma: "no-cache",
+    Expires: "0",
+    "Surrogate-Control": "no-store",
+  });
+  next();
+});
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
