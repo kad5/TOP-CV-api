@@ -26,6 +26,7 @@ The api is coded with node / express and is minimal containing end points for Au
 although this was a utility project. There were few areas I included in it so i can learn via implementation:
 
 - Implementing refresh tokens and refresh token rotations for Auth. Previously, I had implemented auth via passport local strategy, and jwt with custom auth mw with only 1 https token. This time I wanted to use passport for jwt to test it and perhaps add other strategies like social logins.
+- wanted to try to store objects in postgresql bd with prisma via jsonob
 - I had some practice adding security mw to ensure backend api is secure from attacks
 - more practice on planning and excuting an api codebase. This time i felt very organized and the whole codebase took few hours only, a large portion of it was testing.
 - more CORS handling practice. I learned alot about https and security.
